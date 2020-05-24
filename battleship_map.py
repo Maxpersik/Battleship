@@ -1,10 +1,7 @@
 import random
-#from array import *
 
 N = 10
 debug = 0
-
-
 
 server_ships = []
 server_ships.insert(1, [])
@@ -14,12 +11,6 @@ server_shoots = []
 server_shoots.insert(0, [])
 server_shoots.insert(1, [])
 server_shoots.insert(2, [])
-
-# print(server_shoots)
-
-# server_shoots[1].append((9,6))
-# server_shoots[2].append((8,5))
-
 
 def genShips(N, debug = False):
     ships = []
@@ -104,8 +95,6 @@ def printShips(ships, N):
         for x in range(1, N + 1):
             if (x, y) in ships:
                 print("[#]", end = "")
-            # elif (x, y) in deny:
-            #     print("[ ]", end = "")
             else:
                 print("[ ]", end = "")
         print()
@@ -121,8 +110,6 @@ def mapShips(player):
                     shipStr += "\033[44m\033[31m{}\033[0m".format("[#]")
                 else:
                     shipStr += "\033[44m\033[30m{}\033[0m".format("[#]")
-            # elif (x, y) in deny:
-            #     shipStr += "[:]"
             else:
 
                 if (x, y) in server_shoots[enemyPlayer(player)]:
@@ -144,8 +131,6 @@ def mapShoots(player):
                     shootStr += "\033[44m\033[31m{}\033[0m".format("[*]")
                 else:
                     shootStr += "\033[44m\033[31m{}\033[0m".format(" * ")
-            # elif (x, y) in deny:
-            #     shipStr += "[:]"
             else:
                 shootStr += "\033[44m\033[34m{}\033[0m".format("[ ]")
         shootStr += "\033[0m" + "\n"
@@ -175,8 +160,4 @@ def enemyPlayer(player):
     return 1 if player == 2 else 2
 
 def getEnemyShips(player):
-
     return mapShoots(player)
-# genShips(N, debug)
-# S = mapShips(ships, deny, N)
-# print(getFriendShips(1))

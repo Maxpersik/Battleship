@@ -7,9 +7,6 @@ HOST = ""
 PORT = 33333
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#server.setblocking(True)
-#server.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 65536)
-
 server.bind((HOST, PORT))
 
 while True:
@@ -32,7 +29,6 @@ while True:
         else:
             player = 2
 
-        #sock.send(("Вы игрок номер " + str(player)).encode())
         gamer = "Вы игрок номер " + str(player) + "\n"
 
         ds = data.decode()
@@ -61,9 +57,6 @@ while True:
             else:
                 wm = bsm.enemyPlayer(player)
                 sock.send("Вы не попали, переход хода :(".encode())
-
-
-            #sock.send((gamer + "Ваш выстрел: " + str(x) + ":" + str(y)).encode())
 
     sock.close()
 
