@@ -1,13 +1,23 @@
-import battleship_map as bsm, socket, time
+import battleship_map as bsm, socket, sys, battleship_bot as bsb
 
 players_ip = []
 wm = 0
+kills = [0, 0, 0]
+
+gameOver = False
+botGame = True
+
+map1 = bsm.getFriendShips(1)
+map2 = bsm.getEnemyShips(2)
 
 HOST = ""
 PORT = 33333
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((HOST, PORT))
+
+if botGame == True:
+    players_ip.append("0.0.0.0")
 
 while True:
     print("Слушаю порт: ", PORT)
@@ -32,7 +42,10 @@ while True:
         gamer = "Вы игрок номер " + str(player) + "\n"
 
         ds = data.decode()
-
+        if gameOver == True:
+            sock.send("Игра закончена!!!".encode())
+            print("Игра закончена")
+            sys.exit()
         if ds == "map":
             map1 = bsm.getFriendShips(player)
             map2 = bsm.getEnemyShips(player)
@@ -50,13 +63,32 @@ while True:
             except:
                 sock.send("Ошибка ввода!".encode())
                 continue
+
             goal = bsm.makeShoot(player, x, y)
+
             if goal == 1:
+                win = ""
+                kills[player] += 1
                 wm = player
-                sock.send("Вы попали, стреляйте снова!!!".encode())
+                if kills[player] >= 20:
+                    gameOver = True
+                    win = "\nCongratulations!!!!!!! You are winner!!"
+                sock.send(("Вы попали, стреляйте снова!!!" + win).encode())
             else:
                 wm = bsm.enemyPlayer(player)
                 sock.send("Вы не попали, переход хода :(".encode())
+            #print(bsb.botPlayer)
+            if botGame == True and wm == bsb.botPlayer:
+                while True:
+                    x, y = bsb.getShootBot(goal)
+                    goal = bsm.makeShoot(bsb.botPlayer, x, y)
+                    if goal == False:
+                        wm = bsm.enemyPlayer(bsb.botPlayer)
+                        break
+
+
+                
+
 
     sock.close()
 
