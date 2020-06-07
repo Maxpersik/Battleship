@@ -9,7 +9,7 @@ while True:
     conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     conn.connect((HOST, PORT))
     conn.send(cmd.encode())
-    conn.settimeout(1)
+    conn.settimeout(0.2)
 
     try:
         while True:
