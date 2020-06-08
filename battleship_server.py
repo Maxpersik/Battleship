@@ -52,6 +52,12 @@ while True:
             map2 = bsm.getEnemyShips(player)
             q = sock.send((gamer + map1 + map2).encode())
             print(q)
+
+        if ds == "mapstr":
+            map1 = bsm.mapStr(player)
+            map2 = bsm.mapStr(bsm.enemyPlayer(player))
+            q = sock.send((map1 + map2).encode())
+
         if len(ds) == 2:
             if player != wm and wm > 0:
                 sock.send("Не ваш ход".encode())

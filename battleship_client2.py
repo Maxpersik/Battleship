@@ -1,7 +1,9 @@
-import socket
+import socket, battleship_ui as bsu
 
-HOST = ""
+HOST = "192.168.1.5"
 PORT = 33333
+
+bsu.startDisplay()
 
 while True:
     cmd = input("Введите команду: ")
@@ -14,6 +16,8 @@ while True:
     try:
         while True:
             data = conn.recv(1024)
+            if cmd == "mapstr":
+                bsu.drawGame(data.decode())
             print(data.decode(), end='')
     except socket.timeout:
         print()

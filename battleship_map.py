@@ -161,3 +161,22 @@ def enemyPlayer(player):
 
 def getEnemyShips(player):
     return mapShoots(player)
+
+
+def mapStr(player):
+    shipStr = ""
+    for y in range(1, N + 1):
+        for x in range(1, N + 1):
+            if (x, y) in server_ships[player]:
+                if (x, y) in server_shoots[enemyPlayer(player)]:
+                    shipStr += "2"
+                else:
+                    shipStr += "1"
+            else:
+
+                if (x, y) in server_shoots[enemyPlayer(player)]:
+                    shipStr += "3"
+                else:
+                    shipStr += "0"
+
+    return shipStr
