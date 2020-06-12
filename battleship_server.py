@@ -96,7 +96,7 @@ while True:
                         if kills[bsb.botPlayer] >= 20:
                             gameOver = True
                             win1 = "Вы проиграли ноликам и единичкам!!!"
-                            break
+                            # break
                     else:
                         wm = bsm.enemyPlayer(bsb.botPlayer)
                         break
