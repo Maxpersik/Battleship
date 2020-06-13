@@ -6,7 +6,8 @@ kills = [0, 0, 0]
 
 gameOver = False
 botGame = True
-win1 = ""
+winPlayer = 0
+
 
 map1 = bsm.getFriendShips(1)
 map2 = bsm.getEnemyShips(2)
@@ -43,10 +44,6 @@ while True:
         gamer = "Вы игрок номер " + str(player) + "\n"
 
         ds = data.decode()
-        if gameOver == True:
-            win2 = "\nИгра закончена!!!\n"
-            sock.send((win1 + win2).encode())
-            break
         if ds == "map":
             map1 = bsm.getFriendShips(player)
             map2 = bsm.getEnemyShips(player)
@@ -54,11 +51,19 @@ while True:
             print(q)
 
         if ds == "mapstr":
-            map1 = bsm.mapStr(player)
-            map2 = bsm.mapStr(bsm.enemyPlayer(player))
+            map1 = bsm.mapStr(player, 1)
+            map2 = bsm.mapStr(bsm.enemyPlayer(player), 0)
             q = sock.send((map1 + map2).encode())
 
         if len(ds) == 2:
+            answer = ""
+            if gameOver == True:
+                if player == winPlayer:
+                    answer = "4"
+                else:
+                    answer = "3"
+                sock.send(answer.encode())
+                continue
             if player != wm and wm > 0:
                 sock.send("Не ваш ход".encode())
                 continue
@@ -68,7 +73,6 @@ while True:
                 x = int(L.index(ds[0:1])) + 1
                 y = int(ds[1:2]) + 1
             except:
-                sock.send("Ошибка ввода!".encode())
                 continue
 
             goal = bsm.makeShoot(player, x, y)
@@ -78,12 +82,15 @@ while True:
                 wm = player
                 if kills[player] >= 20:
                     gameOver = True
-                    win1 = "Congratulations!!!!!!! You are winner!!"
-
-                sock.send(("Вы попали, стреляйте снова!!!\n" + win1).encode())
-            else:
+                    winPlayer = player
+            if goal == 0:
                 wm = bsm.enemyPlayer(player)
-                sock.send("Вы не попали, переход хода :(".encode())
+
+            answer = str(goal)
+            sock.send(answer.encode())
+
+            if goal == 2:
+                continue
             #print(bsb.botPlayer)
             if botGame == True and wm == bsb.botPlayer:
                 goal = False
@@ -95,8 +102,8 @@ while True:
                         kills[bsb.botPlayer] += 1
                         if kills[bsb.botPlayer] >= 20:
                             gameOver = True
-                            win1 = "Вы проиграли ноликам и единичкам!!!"
-                            # break
+                            winPlayer = bsb.botPlayer
+                            break
                     else:
                         wm = bsm.enemyPlayer(bsb.botPlayer)
                         break

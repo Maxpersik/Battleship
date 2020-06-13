@@ -7,6 +7,14 @@ FPS = 30
 
 HOST = "localhost"
 PORT = 33333
+
+MESSAGE_HIT = "Вы попали, стреляйте снова!!!"
+MESSAGE_SPLASH = "Вы не попали, переход хода :("
+MESSAGE_START = "Добро пожаловать в морской бой!!!"
+MESSAGE_LOSE = "Вы проиграли ноликам и единичкам!!!"
+MESSAGE_WIN = "Победа!!!"
+MESSAGE_REPEAT = "Вы сюда уже стреляли"
+
 def sendServer(cmd):
     conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     conn.connect((HOST, PORT))
@@ -34,15 +42,16 @@ BLACK = (0, 0, 0)
 pygame.init()
 pygame.mixer.init()
 pygame.mixer.music.load("sounds/sea.mp3")
-pygame.mixer.music.play()
+pygame.mixer.music.play(loops = -1)
 sf = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Battleship: StartGame")
 clock = pygame.time.Clock()
-bsu.drawMessage(sf, "Добро пожаловать в морской бой!!!")
+bsu.drawMessage(sf, MESSAGE_START)
 sendServer("map")
 mapStr = sendServer("mapstr")
 bsu.drawGame(sf, mapStr)
 mapRefresh = False
+goal = True
 
 # Цикл игры
 running = True
@@ -58,8 +67,8 @@ while running:
             if event.button == 1:
                 cmd = bsu.getMapCoord(event.pos[0], event.pos[1])
                 if cmd:
-                    message = sendServer(cmd)
-
+                    answer = sendServer(cmd)
+                    print(answer)
                     mapRefresh = True
 
     # Обновление
@@ -68,11 +77,24 @@ while running:
 
     if mapRefresh:
         sf.fill(BLACK)
-        bsu.drawMessage(sf, message)
+        if answer == "1":
+            bsu.drawMessage(sf, MESSAGE_HIT)
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/hit.wav"))
+        if answer == "0":
+            bsu.drawMessage(sf, MESSAGE_SPLASH)
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/splash.wav"))
+        if answer == "2":
+            bsu.drawMessage(sf, MESSAGE_REPEAT)
+        if answer == "3":
+            bsu.drawMessage(sf, MESSAGE_LOSE)
+        if answer == "4":
+            bsu.drawMessage(sf, MESSAGE_WIN)
+
         mapStr = sendServer("mapstr")
+        print(answer)
         bsu.drawGame(sf, mapStr)
         mapRefresh = False
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound("sounds/splash.wav"))
+
     # После отрисовки всего, переворачиваем экран
     pygame.display.flip()
 

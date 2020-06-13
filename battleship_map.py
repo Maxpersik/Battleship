@@ -137,10 +137,12 @@ def mapShoots(player):
     return shootStr
 
 def makeShoot(player, x, y):
+    if (x, y) in server_shoots[player]:
+        return 2
     server_shoots[player].append((x, y))
     if (x, y) in server_ships[enemyPlayer(player)]:
-        return True
-    return False
+        return 1
+    return 0
 
 def denyExtend(deny, x, y):
     deny.extend(((x, y), (x + 1, y), (x - 1, y), (x, y - 1), (x, y + 1), (x + 1, y + 1), (x + 1, y - 1), (x - 1, y + 1), (x - 1, y - 1)))
@@ -163,20 +165,23 @@ def getEnemyShips(player):
     return mapShoots(player)
 
 
-def mapStr(player):
+def mapStr(player, isVisibleShips = True):
     shipStr = ""
     for y in range(1, N + 1):
         for x in range(1, N + 1):
             if (x, y) in server_ships[player]:
                 if (x, y) in server_shoots[enemyPlayer(player)]:
-                    shipStr += "2"
+                    shipStr += "2" # попадание
                 else:
-                    shipStr += "1"
+                    if isVisibleShips == False:
+                        shipStr += "0" # скрываем корабли противника
+                    else:
+                        shipStr += "1" # корабль
             else:
 
                 if (x, y) in server_shoots[enemyPlayer(player)]:
-                    shipStr += "3"
+                    shipStr += "3" # мимо
                 else:
-                    shipStr += "0"
+                    shipStr += "0" # море
 
     return shipStr
