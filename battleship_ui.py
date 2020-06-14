@@ -6,6 +6,14 @@ MAP_Y = 70
 MAP_WIDTH = 250
 MAP_HEIGHT = 250
 
+CURSOR = pygame.image.load('images/cursor.png')
+
+MESSAGE_HIT = "Вы попали, стреляйте снова!!!"
+MESSAGE_SPLASH = "Вы не попали, переход хода :("
+MESSAGE_START = "Добро пожаловать в морской бой!!!"
+MESSAGE_LOSE = "Вы проиграли ноликам и единичкам!!!"
+MESSAGE_WIN = "Победа!!!"
+MESSAGE_REPEAT = "Вы сюда уже стреляли"
 
 # 0 - море
 # 1 - корабль
@@ -67,12 +75,23 @@ def drawMap(sf, mx, my, map):
     place = text.get_rect(center=(mx + 108, my + 260))
     sf.blit(text, place)
 
-def drawMessage(sf, text):
+def drawMessage(sf, answer = False):
+    message = MESSAGE_START
+    if answer == "1":
+        message = MESSAGE_HIT
+    if answer == "0":
+        message = MESSAGE_SPLASH
+    if answer == "2":
+        message = MESSAGE_REPEAT
+    if answer == "3":
+        message = MESSAGE_LOSE
+    if answer == "4":
+        message = MESSAGE_WIN
     pygame.draw.rect(sf, (0xc5, 0xc5, 0xc5), (80, 390, 620, 70))
     font = pygame.font.Font(None, 45)
-    text = font.render(text, 1, (0x27, 0x5d, 0x85))
-    place = text.get_rect(center=(390, 420))
-    sf.blit(text, place)
+    text = font.render(message, 1, (0x27, 0x5d, 0x85))
+    rect = text.get_rect(center=(390, 420))
+    sf.blit(text, rect)
 
 def drawGame(sf, mapStr):
     global MAP1_X, MAP2_X, MAP_Y
@@ -97,5 +116,19 @@ def getMapCoord(mouse_x, mouse_y):
     return False
 
 
+def drawMouse(sf):
+    global MAP1_X, MAP2_X, MAP_Y, MAP_HEIGHT, MAP_WIDTH, CURSOR
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    if mouse_x > MAP2_X and mouse_x < MAP2_X + MAP_WIDTH and mouse_y > MAP_Y and mouse_y < MAP_Y + MAP_HEIGHT:
+        pygame.mouse.set_visible(0)
+        sf.blit(CURSOR, (mouse_x - 12, mouse_y - 12))
+    else:
+        pygame.mouse.set_visible(1)
+    return
 
-
+def playSound(answer):
+    if answer == "1":
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/hit.wav"))
+    if answer == "0":
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/splash.wav"))
+    return

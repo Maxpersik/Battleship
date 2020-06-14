@@ -8,12 +8,6 @@ FPS = 30
 HOST = "localhost"
 PORT = 33333
 
-MESSAGE_HIT = "Вы попали, стреляйте снова!!!"
-MESSAGE_SPLASH = "Вы не попали, переход хода :("
-MESSAGE_START = "Добро пожаловать в морской бой!!!"
-MESSAGE_LOSE = "Вы проиграли ноликам и единичкам!!!"
-MESSAGE_WIN = "Победа!!!"
-MESSAGE_REPEAT = "Вы сюда уже стреляли"
 
 def sendServer(cmd):
     conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -43,15 +37,16 @@ pygame.init()
 pygame.mixer.init()
 pygame.mixer.music.load("sounds/sea.mp3")
 pygame.mixer.music.play(loops = -1)
+
 sf = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Battleship: StartGame")
 clock = pygame.time.Clock()
-bsu.drawMessage(sf, MESSAGE_START)
 sendServer("map")
 mapStr = sendServer("mapstr")
 bsu.drawGame(sf, mapStr)
 mapRefresh = False
 goal = True
+answer = False
 
 # Цикл игры
 running = True
@@ -68,32 +63,21 @@ while running:
                 cmd = bsu.getMapCoord(event.pos[0], event.pos[1])
                 if cmd:
                     answer = sendServer(cmd)
-                    print(answer)
                     mapRefresh = True
 
     # Обновление
+    if mapRefresh:
+        bsu.playSound(answer)
+        mapStr = sendServer("mapstr")
+
+        mapRefresh = False
 
     # Рендеринг
+    sf.fill(BLACK)
+    bsu.drawMessage(sf, answer)
+    bsu.drawGame(sf, mapStr)
+    bsu.drawMouse(sf)
 
-    if mapRefresh:
-        sf.fill(BLACK)
-        if answer == "1":
-            bsu.drawMessage(sf, MESSAGE_HIT)
-            pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/hit.wav"))
-        if answer == "0":
-            bsu.drawMessage(sf, MESSAGE_SPLASH)
-            pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/splash.wav"))
-        if answer == "2":
-            bsu.drawMessage(sf, MESSAGE_REPEAT)
-        if answer == "3":
-            bsu.drawMessage(sf, MESSAGE_LOSE)
-        if answer == "4":
-            bsu.drawMessage(sf, MESSAGE_WIN)
-
-        mapStr = sendServer("mapstr")
-        print(answer)
-        bsu.drawGame(sf, mapStr)
-        mapRefresh = False
 
     # После отрисовки всего, переворачиваем экран
     pygame.display.flip()
