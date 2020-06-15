@@ -37,7 +37,6 @@ pygame.init()
 pygame.mixer.init()
 pygame.mixer.music.load("sounds/sea.mp3")
 pygame.mixer.music.play(loops = -1)
-
 sf = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Battleship: StartGame")
 clock = pygame.time.Clock()
@@ -67,16 +66,19 @@ while running:
 
     # Обновление
     if mapRefresh:
+        sf.fill(BLACK)
         bsu.playSound(answer)
         mapStr = sendServer("mapstr")
 
-        mapRefresh = False
+        bsu.drawGame(sf, mapStr)
 
-    # Рендеринг
-    sf.fill(BLACK)
+
+        mapRefresh = False
     bsu.drawMessage(sf, answer)
-    bsu.drawGame(sf, mapStr)
     bsu.drawMouse(sf)
+    # Рендеринг
+
+
 
 
     # После отрисовки всего, переворачиваем экран

@@ -1,4 +1,4 @@
-import pygame
+import pygame, battleship_cursor as bsc
 
 MAP1_X = 80
 MAP2_X = 470
@@ -120,10 +120,10 @@ def drawMouse(sf):
     global MAP1_X, MAP2_X, MAP_Y, MAP_HEIGHT, MAP_WIDTH, CURSOR
     mouse_x, mouse_y = pygame.mouse.get_pos()
     if mouse_x > MAP2_X and mouse_x < MAP2_X + MAP_WIDTH and mouse_y > MAP_Y and mouse_y < MAP_Y + MAP_HEIGHT:
-        pygame.mouse.set_visible(0)
-        sf.blit(CURSOR, (mouse_x - 12, mouse_y - 12))
+
+        pygame.mouse.set_cursor(bsc.CURSOR_AIM_SIZE, bsc.CURSOR_AIM_HOTSPOT, bsc.CURSOR_AIM_ANDMASK, bsc.CURSOR_AIM_XORMASK)
     else:
-        pygame.mouse.set_visible(1)
+        pygame.mouse.set_cursor(bsc.CURSOR_NORMAL_SIZE, bsc.CURSOR_NORMAL_HOTSPOT, bsc.CURSOR_NORMAL_ANDMASK, bsc.CURSOR_NORMAL_XORMASK)
     return
 
 def playSound(answer):
