@@ -69,10 +69,7 @@ while running:
         sf.fill(BLACK)
         bsu.playSound(answer)
         mapStr = sendServer("mapstr")
-
         bsu.drawGame(sf, mapStr)
-
-
         mapRefresh = False
     bsu.drawMessage(sf, answer)
     bsu.drawMouse(sf)

@@ -45,14 +45,14 @@ def drawCell(sf, px, py, type):
 def drawMap(sf, mx, my, map):
 
     # text
-    font = pygame.font.Font(None, 23)
-    text = font.render("         A    B    C   D    E    F   G    H    I     J", 1, (0xff, 0xff, 0xff))
+    font = pygame.font.SysFont("Arial", 15)
+    text = font.render("        A    B    C   D    E    F   G    H    I     J", 1, (0xff, 0xff, 0xff))
     place = text.get_rect(center=(mx + 108, my - 7))
     sf.blit(text, place)
 
     for x in range(10):
 
-        font = pygame.font.Font(None, 23)
+        font = pygame.font.SysFont("Arial", 15)
         text = font.render(str(x), 1, (0xff, 0xff, 0xff))
         place = text.get_rect(center=(mx - 10, my + x * 25 + 15))
         sf.blit(text, place)
@@ -65,13 +65,13 @@ def drawMap(sf, mx, my, map):
             drawCell(sf, px, py, type)
             pygame.draw.rect(sf, (0, 0, 0), (px, py, 25, 25), 1)
 
-        font = pygame.font.Font(None, 23)
+        font = pygame.font.SysFont("Arial", 15)
         text = font.render(str(x), 1, (0xff, 0xff, 0xff))
         place = text.get_rect(center=(mx + 260, my + x * 25 + 15))
         sf.blit(text, place)
 
-    font = pygame.font.Font(None, 23)
-    text = font.render("         A    B    C   D    E    F   G    H    I     J", 1, (0xff, 0xff, 0xff))
+    font = pygame.font.SysFont("Arial", 15)
+    text = font.render("        A    B    C   D    E    F   G    H    I     J", 1, (0xff, 0xff, 0xff))
     place = text.get_rect(center=(mx + 108, my + 260))
     sf.blit(text, place)
 
@@ -88,9 +88,9 @@ def drawMessage(sf, answer = False):
     if answer == "4":
         message = MESSAGE_WIN
     pygame.draw.rect(sf, (0xc5, 0xc5, 0xc5), (80, 390, 620, 70))
-    font = pygame.font.Font(None, 45)
+    font = pygame.font.SysFont("Arial", 30)
     text = font.render(message, 1, (0x27, 0x5d, 0x85))
-    rect = text.get_rect(center=(390, 420))
+    rect = text.get_rect(center=(390, 422))
     sf.blit(text, rect)
 
 def drawGame(sf, mapStr):
