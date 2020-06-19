@@ -11,8 +11,6 @@ class View:
 
     BLACK = (0, 0, 0)
 
-    CURSOR = pygame.image.load('images/cursor.png')
-
     MESSAGE_HIT = "Вы попали, стреляйте снова!!!"
     MESSAGE_SPLASH = "Вы не попали, переход хода :("
     MESSAGE_START = "Добро пожаловать в морской бой!!!"
