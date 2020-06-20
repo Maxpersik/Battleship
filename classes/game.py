@@ -5,18 +5,13 @@ from classes.view import View
 class Game:
     FPS = 30
 
-    HOST = "localhost"
-    PORT = 33333
-
-    def __init__(self):
+    def __init__(self, server_host = "localhost", server_port = 33333):
         self.__clock = pygame.time.Clock()
-        self.client = Client(self.HOST, self.PORT)
+        self.client = Client(server_host, server_port)
         self.view = View()
 
     def run(self):
-
-        self.client.sendServer("map")
-        mapStr = self.client.sendServer("mapstr")
+        mapStr = self.client.sendServer("maps")
         self.view.drawGame(mapStr)
         mapRefresh = False
         answer = False
@@ -41,7 +36,7 @@ class Game:
             if mapRefresh:
                 self.view.clear()
                 self.view.playSound(answer)
-                mapStr = self.client.sendServer("mapstr")
+                mapStr = self.client.sendServer("maps")
                 self.view.drawGame(mapStr)
                 mapRefresh = False
             self.view.drawMessage(answer)
