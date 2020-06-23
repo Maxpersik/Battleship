@@ -11,12 +11,12 @@ class Server:
         self.isBotGame = isBotGame
 
         self.players = [0, 0]
-        self.players[0] = Player(False)
+        self.players[0] = Player(isBotGame)
         self.players[1] = Player(False)
 
         self.gameOver = False
-        self.winPlayer = 0
-        self.runPlayer = 0
+        self.winStatus = 0
+        self.runPlayer = 1
 
     def run(self):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -25,76 +25,102 @@ class Server:
         if self.isBotGame == True:
             self.players_ip.append("0.0.0.0")
 
+        print("Слушаю порт: ", self.PORT)
+
         running = True
         while running:
-            print("Слушаю порт: ", self.PORT)
             server.listen(2)
             sock, addr = server.accept()
             while True:
                 data = sock.recv(1024)
                 if not data:
                     break
-                # print("ПоЛуЧеНо оТ: ", addr, data.decode())
-                player = self.__checkClient(addr)
-                if not player:
+
+                print("ПоЛуЧеНо оТ: ", addr, data.decode())
+                if not self.__checkPlayer(addr):
                     break
 
                 cmd = data.decode()
-                res = self.__applyCmd(cmd, player)
+                res = self.__applyCmd(cmd)
                 sock.send(str(res).encode())
 
             sock.close()
 
-
-    def __getXY(self, cmd):
-        L = "ABCDEFGHIJ"
-        x = int(L.index(cmd[0:1])) + 1
-        y = int(cmd[1:2]) + 1
-        return x, y
-
-    def __checkClient(self, addr):
+    def __checkPlayer(self, addr):
         ip = addr[0]
         if ip not in self.players_ip and len(self.players_ip) > 2:
             return False
         if ip not in self.players_ip:
             self.players_ip.append(ip)
-        return self.players_ip.index(ip)
+        self.player = self.players_ip.index(ip)
+        self.enemyPlayer = 0 if self.player == 1 else 1
+        return True
 
-    def __applyCmd(self, cmd, player):
+    def __checkRunner(self):
+        if self.runPlayer != self.player:
+            return False
+        return True
+
+    def __applyCmd(self, cmd):
         if cmd == "maps":
-            return self.players[player].getMaps()
+            return self.__getMaps()
+
+        if cmd == "ping":
+            return self.__getPingCode()
 
         if len(cmd) == 2:
-            try:
-                x, y = self.__getXY(cmd)
-            except:
-                return -1
+            return self.__getShootCode(cmd)
 
-            return self.__getCode(x, y, player)
         return -1
 
-    def __getCode(self, x, y, player):
-        enemyPlayer = self.__enemyPlayer(player)
+    def __getMaps(self):
+        return self.players[self.player].getMaps()
 
-        if self.players[player].isWinner():
-            self.gameOver = True
-            self.winPlayer = player
-            return 4
-        if self.players[enemyPlayer].isWinner():
-            self.gameOver = True
-            self.winPlayer = enemyPlayer
-            return 3
+    def __getPingCode(self):
+        if self.gameOver:
+            return self.winStatus
 
-        isGoal = self.players[enemyPlayer].isGoal(x, y)
-        code = self.players[player].makeShoot(isGoal, x, y)
-        if isGoal:
-            self.runPlayer = player
-        else:
-            self.runPlayer = enemyPlayer
+        if self.__checkRunner():
+            return 5
+
+        if self.players[self.enemyPlayer].isBot:
+            x, y = self.players[self.enemyPlayer].getXY()
+
+            # shoot bot
+            code = self.players[self.enemyPlayer].makeShoot(x, y, self.players[self.player])
+
+            if code == 0:
+                self.runPlayer = self.player
+
+            if self.players[self.enemyPlayer].isWinner():
+                self.gameOver = True
+                self.winPlayer = self.enemyPlayer
+                self.winStatus = 3
+
+            return code + 10
+        return 5
+
+    def __getShootCode(self, cmd):
+        if self.gameOver:
+            return self.winStatus
+
+        if not self.__checkRunner():
+            return 15
+
+        try:
+            x, y = self.players[self.player].getXY(cmd)
+        except:
+            return -1
+
+        # shoot
+        code = self.players[self.player].makeShoot(x, y, self.players[self.enemyPlayer])
+
+        if code == 0:
+            self.runPlayer = self.enemyPlayer
+
+        if self.players[self.player].isWinner():
+            self.gameOver = True
+            self.winPlayer = self.player
+            self.winStatus = 4
+
         return code
-
-    def __enemyPlayer(self, player):
-        return not player
-
-    # def enemyPlayer(self):
-    #     return 1 if self.player == 2 else 2

@@ -132,22 +132,31 @@ class Map:
         return shipStr
 
     def isShip(self, x, y):
-        if (x, y) in self.enemy_shoots:
-            return False
-        self.enemy_shoots.append((x, y))
         if (x, y) in self.ships:
             return True
         return False
 
-    def isShoot(self, x, y, isGoal):
+    def saveEnemyShoot(self, x, y):
+        self.enemy_shoots.append((x, y))
+
+    def isShoot(self, x, y):
         if (x, y) in self.shoots:
             return False
+        return True
+
+    def saveShoot(self, x, y, isGoal):
         self.shoots.append((x, y))
         if isGoal:
             self.enemy_ships.append((x, y))
-        return True
+        return
 
     def isMap(self, x, y):
         if x < self.N + 1 and x > 0 and y < self.N + 1 and y > 0:
             return True
+        return False
 
+    def getXY(self, an):
+        L = "ABCDEFGHIJ"
+        x = int(L.index(an[0:1])) + 1
+        y = int(an[1:2]) + 1
+        return x, y

@@ -15,6 +15,7 @@ class Game:
         self.view.drawGame(mapStr)
         mapRefresh = False
         answer = False
+        count = 0
 
         running = True
         while running:
@@ -30,15 +31,25 @@ class Game:
                         cmd = self.view.getMapCoord(event.pos[0], event.pos[1])
                         if cmd:
                             answer = self.client.sendServer(cmd)
+                            self.view.playSound(answer)
                             mapRefresh = True
+                            count = 0
+
+            # Проверить ход соперника
+            count += 1
+            if count == self.FPS * 3:
+                answer = self.client.sendServer("ping")
+                self.view.playSound(answer)
+                mapRefresh = True
+                count = 0
 
             # Обновление
             if mapRefresh:
                 self.view.clear()
-                self.view.playSound(answer)
                 mapStr = self.client.sendServer("maps")
                 self.view.drawGame(mapStr)
                 mapRefresh = False
+
             self.view.drawMessage(answer)
             self.view.drawMouse()
             # Рендеринг
