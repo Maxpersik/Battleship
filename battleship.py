@@ -1,20 +1,26 @@
-import threading
+import threading, sys
 from classes.game import Game
 from classes.server import Server
 
-SERVER_HOST = "localhost"
-
-def startServer():
-    isBotGame = True
+def startServer(isBotGame=True):
     server = Server(isBotGame)
     server.run()
 
-if SERVER_HOST == "localhost":
-    threading.Thread(target=startServer).start()
+def main():
+    if len(sys.argv) > 1:
+        if sys.argv[0] == "server":
+            startServer(False)
+        if sys.argv[0] == "client":
+            game = Game(sys.argv[1])
+            game.run()
+    else:
+        threading.Thread(target=startServer).start()
 
-game = Game(SERVER_HOST)
-game.run()
+        game = Game()
+        game.run()
 
+if __name__ == "__main__":
+    main()
 
 
 

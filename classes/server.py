@@ -3,9 +3,6 @@ from classes.player import Player
 
 class Server:
 
-    HOST = "localhost"
-    PORT = 33333
-
     def __init__(self, isBotGame = True):
         self.players_ip = []
         self.isBotGame = isBotGame
@@ -17,6 +14,9 @@ class Server:
         self.gameOver = False
         self.winStatus = 0
         self.runPlayer = 1
+
+        self.HOST = "localhost"
+        self.PORT = 33335
 
     def run(self):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -82,6 +82,17 @@ class Server:
 
         if self.__checkRunner():
             return 5
+
+        if self.__checkRunner():
+            if self.players[self.player].isBot:
+                x, y = self.players[self.player].getXY()
+
+                # shoot bot
+                code = self.players[self.player].makeShoot(x, y, self.players[self.enemyPlayer])
+
+                if code == 0:
+                    self.runPlayer = self.enemyPlayer
+            return code
 
         if self.players[self.enemyPlayer].isBot:
             x, y = self.players[self.enemyPlayer].getXY()

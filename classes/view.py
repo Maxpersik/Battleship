@@ -62,7 +62,7 @@ class View:
     def __init__(self):
         pygame.init()
         pygame.mixer.init()
-        pygame.mixer.music.load("sounds/sea.mp3")
+        pygame.mixer.music.load("sounds/sea.wav")
         pygame.mixer.music.play(loops=-1)
         self.__sf = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Battleship: StartGame")
@@ -143,7 +143,7 @@ class View:
     def getMapCoord(self, mouse_x, mouse_y):
         L = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 
-        if self.__isRangeMap():
+        if self.__isRangeMap(mouse_x, mouse_y):
             x = (mouse_x - self.MAP2_X) // 25
             y = (mouse_y - self.MAP_Y) // 25
             coord = L[x] + str(y)
@@ -152,7 +152,8 @@ class View:
         return False
 
     def drawMouse(self):
-        if self.__isRangeMap():
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        if self.__isRangeMap(mouse_x, mouse_y):
             pygame.mouse.set_cursor(self.CURSOR_AIM_SIZE, self.CURSOR_AIM_HOTSPOT, self.CURSOR_AIM_ANDMASK,
                                     self.CURSOR_AIM_XORMASK)
         else:
@@ -160,9 +161,8 @@ class View:
                                     self.CURSOR_NORMAL_XORMASK)
         return
 
-    def __isRangeMap(self):
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        if mouse_x > self.MAP2_X and mouse_x < self.MAP2_X + self.MAP_WIDTH and mouse_y > self.MAP_Y and mouse_y < self.MAP_Y + self.MAP_HEIGHT:
+    def __isRangeMap(self, mouse_x, mouse_y):
+        if mouse_x > self.MAP2_X and mouse_x < (self.MAP2_X + self.MAP_WIDTH) and mouse_y > self.MAP_Y and mouse_y < (self.MAP_Y + self.MAP_HEIGHT):
             return True
         return False
 
