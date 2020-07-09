@@ -1,22 +1,24 @@
-import socket
+import socket, sys, config
 from classes.player import Player
 
 class Server:
 
-    def __init__(self, isBotGame = True):
+    def __init__(self, isBotGame = True, botCount = config.game["bots"]):
         self.players_ip = []
         self.isBotGame = isBotGame
 
         self.players = [0, 0]
         self.players[0] = Player(isBotGame)
-        self.players[1] = Player(False)
+        self.players[1] = Player(True if isBotGame and botCount > 1 else False)
+        self.botCount = botCount
+
 
         self.gameOver = False
         self.winStatus = 0
         self.runPlayer = 1
 
-        self.HOST = "localhost"
-        self.PORT = 33335
+        self.HOST = config.conn["host"]
+        self.PORT = config.conn["port"]
 
     def run(self):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -41,10 +43,15 @@ class Server:
                     break
 
                 cmd = data.decode()
+                if cmd == "quit":
+                    running = False
+                    break
+
                 res = self.__applyCmd(cmd)
                 sock.send(str(res).encode())
 
             sock.close()
+        sys.exit()
 
     def __checkPlayer(self, addr):
         ip = addr[0]
@@ -71,7 +78,7 @@ class Server:
         if len(cmd) == 2:
             return self.__getShootCode(cmd)
 
-        return -1
+        return config.codes["CODE_ERROR"]
 
     def __getMaps(self):
         return self.players[self.player].getMaps()
@@ -80,58 +87,63 @@ class Server:
         if self.gameOver:
             return self.winStatus
 
-        if self.__checkRunner():
-            return 5
+        if self.botCount < 2 and self.__checkRunner():
+            return config.codes["CODE_RUN"]
 
         if self.__checkRunner():
             if self.players[self.player].isBot:
                 x, y = self.players[self.player].getXY()
 
                 # shoot bot
-                code = self.players[self.player].makeShoot(x, y, self.players[self.enemyPlayer])
+                goal = self.players[self.player].makeShoot(x, y, self.players[self.enemyPlayer])
 
-                if code == 0:
+                if goal == 0:
                     self.runPlayer = self.enemyPlayer
-            return code
+            return self.__getCode(goal, False)
 
         if self.players[self.enemyPlayer].isBot:
             x, y = self.players[self.enemyPlayer].getXY()
 
             # shoot bot
-            code = self.players[self.enemyPlayer].makeShoot(x, y, self.players[self.player])
+            goal = self.players[self.enemyPlayer].makeShoot(x, y, self.players[self.player])
 
-            if code == 0:
+            if goal == 0:
                 self.runPlayer = self.player
 
             if self.players[self.enemyPlayer].isWinner():
                 self.gameOver = True
                 self.winPlayer = self.enemyPlayer
-                self.winStatus = 3
+                self.winStatus = config.codes["CODE_LOSE"]
 
-            return code + 10
-        return 5
+            return self.__getCode(goal, True)
+        return config.codes["CODE_RUN"]
 
     def __getShootCode(self, cmd):
         if self.gameOver:
             return self.winStatus
 
         if not self.__checkRunner():
-            return 15
+            return config.codes["CODE_ENEMY_RUN"]
 
         try:
             x, y = self.players[self.player].getXY(cmd)
         except:
-            return -1
+            return config.codes["CODE_ERROR"]
 
         # shoot
-        code = self.players[self.player].makeShoot(x, y, self.players[self.enemyPlayer])
+        goal = self.players[self.player].makeShoot(x, y, self.players[self.enemyPlayer])
 
-        if code == 0:
+        if goal == 0:
             self.runPlayer = self.enemyPlayer
 
         if self.players[self.player].isWinner():
             self.gameOver = True
             self.winPlayer = self.player
-            self.winStatus = 4
+            self.winStatus = config.codes["CODE_WIN"]
 
-        return code
+        return self.__getCode(goal, False)
+
+    def __getCode(self, goal, isEnemyPlayer):
+        codes = ["CODE_SPLASH", "CODE_HIT", "CODE_REPEAT", "CODE_ENEMY_SPLASH", "CODE_ENEMY_HIT", "CODE_ENEMY_REPEAT"]
+        index = goal + 3 if isEnemyPlayer else goal
+        return codes[index]

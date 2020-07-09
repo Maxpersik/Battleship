@@ -1,11 +1,11 @@
-import pygame
+import pygame, config
 from classes.client import Client
 from classes.view import View
 
 class Game:
-    FPS = 30
+    FPS = config.game["fps"]
 
-    def __init__(self, server_host = "localhost", server_port = 33335):
+    def __init__(self, server_host=config.conn["host"], server_port=config.conn["port"]):
         self.__clock = pygame.time.Clock()
         self.client = Client(server_host, server_port)
         self.view = View()
@@ -14,7 +14,7 @@ class Game:
         mapStr = self.client.sendServer("maps")
         self.view.drawGame(mapStr)
         mapRefresh = False
-        answer = False
+        answer = "CODE_START"
         count = 0
 
         running = True
@@ -58,3 +58,4 @@ class Game:
             pygame.display.flip()
 
         pygame.quit()
+        self.client.sendServer("quit")

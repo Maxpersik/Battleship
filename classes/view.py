@@ -1,4 +1,4 @@
-import pygame
+import pygame, config
 
 class View:
     WIDTH = 800
@@ -10,17 +10,6 @@ class View:
     MAP_HEIGHT = 250
 
     BLACK = (0, 0, 0)
-
-    MESSAGE_HIT = "Вы попали, стреляйте снова!!!"
-    MESSAGE_SPLASH = "Вы не попали, переход хода :("
-    MESSAGE_START = "Добро пожаловать в морской бой!!!"
-    MESSAGE_LOSE = "Вы проиграли ноликам и единичкам!!!"
-    MESSAGE_WIN = "Победа!!!"
-    MESSAGE_REPEAT = "Вы сюда уже стреляли"
-    MESSAGE_RUN = "Ваш ход"
-    MESSAGE_ENEMY_RUN = "Не ваш ход"
-    MESSAGE_ENEMY_HIT = "Ваш корабль подбит"
-    MESSAGE_ENEMY_SPLASH = "Соперник промахнулся"
 
     # 0 - море
     # 1 - корабль
@@ -62,7 +51,7 @@ class View:
     def __init__(self):
         pygame.init()
         pygame.mixer.init()
-        pygame.mixer.music.load("sounds/sea.wav")
+        pygame.mixer.music.load(config.sounds["CODE_SEA"])
         pygame.mixer.music.play(loops=-1)
         self.__sf = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Battleship: StartGame")
@@ -109,26 +98,8 @@ class View:
         place = text.get_rect(center=(mx + 108, my + 260))
         self.__sf.blit(text, place)
 
-    def drawMessage(self, answer=False):
-        message = self.MESSAGE_START
-        if answer == "0":
-            message = self.MESSAGE_SPLASH
-        if answer == "1":
-            message = self.MESSAGE_HIT
-        if answer == "2":
-            message = self.MESSAGE_REPEAT
-        if answer == "3":
-            message = self.MESSAGE_LOSE
-        if answer == "4":
-            message = self.MESSAGE_WIN
-        if answer == "5":
-            message = self.MESSAGE_RUN
-        if answer == "15":
-            message = self.MESSAGE_ENEMY_RUN
-        if answer == "11":
-            message = self.MESSAGE_ENEMY_HIT
-        if answer == "10":
-            message = self.MESSAGE_ENEMY_SPLASH
+    def drawMessage(self, code="CODE_START"):
+        message = config.messages[code]
 
         pygame.draw.rect(self.__sf, (0xc5, 0xc5, 0xc5), (80, 390, 620, 70))
         font = pygame.font.SysFont("Arial", 30)
@@ -166,15 +137,11 @@ class View:
             return True
         return False
 
-    def playSound(self, answer):
-        if answer == "1":
-            pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/hit.wav"))
-        if answer == "0":
-            pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/splash.wav"))
-        if answer == "11":
-            pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/hit.wav"))
-        if answer == "10":
-            pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/splash.wav"))
+    def playSound(self, code):
+        try:
+            pygame.mixer.Channel(1).play(pygame.mixer.Sound(config.sounds[code]))
+        except:
+            pass
         return
 
     def clear(self):
