@@ -5,7 +5,7 @@ from classes.view import View
 class Game:
     FPS = config.game["fps"]
 
-    def __init__(self, server_host=config.conn["host"], server_port=config.conn["port"]):
+    def __init__(self, server_host, server_port):
         self.__clock = pygame.time.Clock()
         self.client = Client(server_host, server_port)
         self.view = View()

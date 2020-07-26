@@ -3,19 +3,17 @@ from classes.player import Player
 
 class Server:
 
-    def __init__(self, isBotGame = True, botCount = config.game["bots"]):
+    def __init__(self):
         self.players_ip = []
-        self.isBotGame = isBotGame
+        self.botCount = config.game["bots"]
 
         self.players = [0, 0]
-        self.players[0] = Player(isBotGame)
-        self.players[1] = Player(True if isBotGame and botCount > 1 else False)
-        self.botCount = botCount
-
+        self.players[0] = Player(True if self.botCount > 0 else False)
+        self.players[1] = Player(True if self.botCount > 1 else False)
 
         self.gameOver = False
         self.winStatus = 0
-        self.runPlayer = 1
+        self.runPlayer = 0
 
         self.HOST = config.conn["host"]
         self.PORT = config.conn["port"]
@@ -24,7 +22,7 @@ class Server:
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((self.HOST, self.PORT))
 
-        if self.isBotGame == True:
+        if self.botCount > 0:
             self.players_ip.append("0.0.0.0")
 
         print("Слушаю порт: ", self.PORT)
@@ -38,19 +36,20 @@ class Server:
                 if not data:
                     break
 
-                print("ПоЛуЧеНо оТ: ", addr, data.decode())
+                print("ПоЛуЧеНо оТ: ", addr, data)
+
                 if not self.__checkPlayer(addr):
                     break
 
                 cmd = data.decode()
-                if cmd == "quit":
+                if cmd == "quit" and self.player == 0:
                     running = False
                     break
 
                 res = self.__applyCmd(cmd)
                 sock.send(str(res).encode())
 
-            sock.close()
+        sock.close()
         sys.exit()
 
     def __checkPlayer(self, addr):

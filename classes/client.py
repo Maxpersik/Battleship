@@ -9,17 +9,9 @@ class Client:
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         conn.connect((self.__host, self.__port))
         conn.send(cmd.encode())
-        conn.settimeout(0.2)
 
-        answer = ""
-
-        try:
-            while True:
-                data = conn.recv(1024)
-                answer += data.decode()
-                # print(data.decode(), end='')
-        except socket.timeout:
-            pass
+        data = conn.recv(1024)
+        answer = data.decode()
 
         conn.close()
         return answer

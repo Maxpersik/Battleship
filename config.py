@@ -1,6 +1,7 @@
 conn = dict(
     host="localhost",
-    port=33333
+    port=33333,
+    server=True
 )
 
 game = dict(

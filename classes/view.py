@@ -86,7 +86,10 @@ class View:
             for y in range(10):
                 px, py = mx + x * 25, my + y * 25
                 index = y * 10 + x
-                type = int(map[index])
+                try:
+                    type = int(map[index])
+                except:
+                    print(index, map)
                 self.__drawCell(px, py, type)
                 pygame.draw.rect(self.__sf, (0, 0, 0), (px, py, 25, 25), 1)
 
@@ -99,8 +102,10 @@ class View:
         self.__sf.blit(text, place)
 
     def drawMessage(self, code="CODE_START"):
-        message = config.messages[code]
-
+        try:
+            message = config.messages[code]
+        except:
+            message = config.messages["CODE_ERROR"]
         pygame.draw.rect(self.__sf, (0xc5, 0xc5, 0xc5), (80, 390, 620, 70))
         font = pygame.font.SysFont("Arial", 30)
         text = font.render(message, 1, (0x27, 0x5d, 0x85))
@@ -108,8 +113,12 @@ class View:
         self.__sf.blit(text, rect)
 
     def drawGame(self, mapStr):
+        if len(mapStr) < 200:
+            return False
+
         self.drawMap(self.MAP1_X, self.MAP_Y, mapStr[:100])
         self.drawMap(self.MAP2_X, self.MAP_Y, mapStr[-100:])
+        return True
 
     def getMapCoord(self, mouse_x, mouse_y):
         L = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]

@@ -1,23 +1,30 @@
-import threading, sys
+import threading, sys, config
 from classes.game import Game
 from classes.server import Server
 
-def startServer(isBotGame=True):
-    server = Server(isBotGame)
+def startServer():
+    server = Server()
     server.run()
 
-def main():
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "server":
-            startServer(False)
-        if sys.argv[1] == "client":
-            game = Game(sys.argv[2])
-            game.run()
-    else:
+def startGame():
+    if config.conn["server"]:
         threading.Thread(target=startServer).start()
 
-        game = Game()
-        game.run()
+    host = config.conn["host"]
+    port = config.conn["port"]
+
+    game = Game(host, port)
+    game.run()
+
+def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "server":
+        config.game["bots"] = 0
+
+    if len(sys.argv) > 2 and sys.argv[1] == "client":
+        config.conn["server"] = False
+        config.conn["host"] = sys.argv[2]
+
+    startGame()
 
 if __name__ == "__main__":
     main()
