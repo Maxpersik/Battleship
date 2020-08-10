@@ -42,7 +42,6 @@ class Player:
     def getBotShoot(self):
         while len(self.target_ships) > 0:
             xg, yg = self.target_ships[0]
-
             for i in range(4):
                 x, y = self.__randDirect(xg, yg, i)
                 if self.isRange(x, y):

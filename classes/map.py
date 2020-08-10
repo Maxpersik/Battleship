@@ -29,15 +29,14 @@ class Map:
             y = random.randint(1, self.N)
             if (x, y) in self.deny:
                 continue
-            self.ships.append((x, y))
             for i in range(4):
                 dir = random.randint(0, 3)
                 x1, y1 = self.__randDirect(x, y, dir)
                 if x1 < 11 and x1 > 0 and y1 < 11 and y1 > 0 and (x1, y1) not in self.deny:
+                    self.ships.append((x, y))
                     self.ships.append((x1, y1))
-                    break
-            self.__denyExtend(x, y)
-            self.__denyExtend(x1, y1)
+                    self.__denyExtend(x, y)
+                    self.__denyExtend(x1, y1)
 
         # Трехпалубные корабли
         while len(self.ships) < 16:
@@ -45,7 +44,6 @@ class Map:
             y = random.randint(1, self.N)
             if (x, y) in self.deny:
                 continue
-
             for i in range(4):
                 dir = random.randint(0, 3)
                 x1, y1 = self.__randDirect(x, y, dir)
@@ -65,7 +63,6 @@ class Map:
             y = random.randint(1, self.N)
             if (x, y) in self.deny:
                 continue
-
             for i in range(4):
                 dir = random.randint(0, 3)
                 x1, y1 = self.__randDirect(x, y, dir)
