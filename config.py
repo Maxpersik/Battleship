@@ -1,5 +1,5 @@
 conn = dict(
-    host="192.168.1.248",
+    host="127.0.0.1",
     port=33333,
     server=True
 )
