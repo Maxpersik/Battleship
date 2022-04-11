@@ -8,6 +8,10 @@ class View:
     MAP_Y = 70
     MAP_WIDTH = 250
     MAP_HEIGHT = 250
+    MSG_X = MAP1_X
+    MSG_Y = 390
+    MSG_WIDTH = MAP2_X + MAP_WIDTH - MAP1_X
+    MSG_HEIGHT = 70
 
     BLACK = (0, 0, 0)
 
@@ -46,7 +50,13 @@ class View:
         4, 3, 0, 12, 1, 0, 56, 1, \
         0, 32, 1, 255, 224, 0, 0, 0, \
         )
+
     CURSOR_NORMAL_XORMASK = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+    CURSOR_INVERSE_SIZE = CURSOR_NORMAL_SIZE
+    CURSOR_INVERSE_HOTSPOT = CURSOR_NORMAL_HOTSPOT
+    CURSOR_INVERSE_ANDMASK = CURSOR_NORMAL_XORMASK
+    CURSOR_INVERSE_XORMASK = CURSOR_NORMAL_ANDMASK
 
     def __init__(self):
         pygame.init()
@@ -106,10 +116,10 @@ class View:
             message = config.messages[code]
         except:
             message = config.messages["CODE_ERROR"]
-        pygame.draw.rect(self.__sf, (0xc5, 0xc5, 0xc5), (80, 390, 620, 70))
+        pygame.draw.rect(self.__sf, (0xc5, 0xc5, 0xc5), (self.MSG_X, self.MSG_Y, self.MSG_WIDTH, self.MSG_HEIGHT))
         font = pygame.font.SysFont("Arial", 30)
         text = font.render(message, 1, (0x27, 0x5d, 0x85))
-        rect = text.get_rect(center=(390, 422))
+        rect = text.get_rect(center=(self.MSG_X + self.MSG_WIDTH // 2, self.MSG_Y + self.MSG_HEIGHT // 2))
         self.__sf.blit(text, rect)
 
     def drawGame(self, mapStr):
@@ -133,18 +143,27 @@ class View:
 
     def drawMouse(self):
         mouse_x, mouse_y = pygame.mouse.get_pos()
+
         if self.__isRangeMap(mouse_x, mouse_y):
-            pygame.mouse.set_cursor(self.CURSOR_AIM_SIZE, self.CURSOR_AIM_HOTSPOT, self.CURSOR_AIM_ANDMASK,
-                                    self.CURSOR_AIM_XORMASK)
-        else:
-            pygame.mouse.set_cursor(self.CURSOR_NORMAL_SIZE, self.CURSOR_NORMAL_HOTSPOT, self.CURSOR_NORMAL_ANDMASK,
-                                    self.CURSOR_NORMAL_XORMASK)
+            pygame.mouse.set_cursor(self.CURSOR_AIM_SIZE, self.CURSOR_AIM_HOTSPOT, self.CURSOR_AIM_ANDMASK, self.CURSOR_AIM_XORMASK)
+            return
+
+        if self.__isRangeMapInverse(mouse_x, mouse_y):
+            pygame.mouse.set_cursor(self.CURSOR_INVERSE_SIZE, self.CURSOR_INVERSE_HOTSPOT, self.CURSOR_INVERSE_ANDMASK, self.CURSOR_INVERSE_XORMASK)
+            return
+
+        pygame.mouse.set_cursor(self.CURSOR_NORMAL_SIZE, self.CURSOR_NORMAL_HOTSPOT, self.CURSOR_NORMAL_ANDMASK, self.CURSOR_NORMAL_XORMASK)
         return
 
     def __isRangeMap(self, mouse_x, mouse_y):
         if mouse_x > self.MAP2_X and mouse_x < (self.MAP2_X + self.MAP_WIDTH) and mouse_y > self.MAP_Y and mouse_y < (self.MAP_Y + self.MAP_HEIGHT):
             return True
         return False
+
+    def __isRangeMapInverse(self, mouse_x, mouse_y):
+        if (mouse_x > self.MAP1_X and mouse_x < (self.MAP1_X + self.MAP_WIDTH) and mouse_y > self.MAP_Y and mouse_y < (self.MAP_Y + self.MAP_HEIGHT)) or (mouse_x > self.MSG_X and mouse_x < self.MSG_X + self.MSG_WIDTH and mouse_y > self.MSG_Y and mouse_y < self.MSG_Y + self.MSG_HEIGHT):
+            return False
+        return True
 
     def playSound(self, code):
         try:
