@@ -65,7 +65,7 @@ class View:
         pygame.mixer.music.play(loops=-1)
         self.__sf = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Battleship: StartGame")
-        self.__font = pygame.font.SysFont("Arial", 15)
+        self.__font = pygame.font.Font("fonts/Arial.ttf", 15)
 
     def __drawCell(self, px, py, type):
         if type == 0:
@@ -117,7 +117,7 @@ class View:
         except:
             message = config.messages["CODE_ERROR"]
         pygame.draw.rect(self.__sf, (0xc5, 0xc5, 0xc5), (self.MSG_X, self.MSG_Y, self.MSG_WIDTH, self.MSG_HEIGHT))
-        font = pygame.font.SysFont("Arial", 30)
+        font = pygame.font.Font("fonts/Arial.ttf", 30)
         text = font.render(message, 1, (0x27, 0x5d, 0x85))
         rect = text.get_rect(center=(self.MSG_X + self.MSG_WIDTH // 2, self.MSG_Y + self.MSG_HEIGHT // 2))
         self.__sf.blit(text, rect)
