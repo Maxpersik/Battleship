@@ -18,6 +18,7 @@ class Server:
         self.HOST = config.conn["host"]
         self.PORT = config.conn["port"]
 
+    # Запуск работы сервера
     def run(self):
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((self.HOST, self.PORT))
@@ -27,6 +28,7 @@ class Server:
 
         print("Слушаю порт: ", self.PORT)
 
+        # Загрузка сохраненной игры
         if config.game["autosave"] == 1:
             self.autoLoad()
 
@@ -52,12 +54,14 @@ class Server:
                 res = self.__applyCmd(cmd)
                 sock.send(str(res).encode())
 
+                # Сохранение игры
                 if config.game["autosave"] == 1:
                     self.autoSave()
 
         sock.close()
         sys.exit()
 
+    # Проверка допуска в игровое лобби
     def __checkPlayer(self, addr):
         ip = addr[0]
         if ip not in self.players_ip and len(self.players_ip) > 2:
@@ -68,11 +72,13 @@ class Server:
         self.enemyPlayer = 0 if self.player == 1 else 1
         return True
 
+    # Проверка хода
     def __checkRunner(self):
         if self.runPlayer != self.player:
             return False
         return True
 
+    # Обработка запросов
     def __applyCmd(self, cmd):
         if cmd == "maps":
             return self.__getMaps()
@@ -85,9 +91,11 @@ class Server:
 
         return config.codes["CODE_ERROR"]
 
+    # Получение карты для каждого игрока
     def __getMaps(self):
         return self.players[self.player].getMaps()
 
+    # Проверка состояния игры
     def __getPingCode(self):
         if self.gameOver:
             return self.winStatus
@@ -123,6 +131,7 @@ class Server:
             return self.__getCode(goal, True)
         return config.codes["CODE_RUN"]
 
+    # Проверка стрельбы и перехода хода
     def __getShootCode(self, cmd):
         if self.gameOver:
             return self.winStatus
@@ -148,11 +157,13 @@ class Server:
 
         return self.__getCode(goal, False)
 
+    # Получение кода сообщения
     def __getCode(self, goal, isEnemyPlayer):
         codes = ["CODE_SPLASH", "CODE_HIT", "CODE_REPEAT", "CODE_ENEMY_SPLASH", "CODE_ENEMY_HIT", "CODE_ENEMY_REPEAT"]
         index = goal + 3 if isEnemyPlayer else goal
         return codes[index]
 
+    # Сохранения игровых параметрой и прогресса в файл
     def autoSave(self):
         with open("autosave/game.dat", "wb") as file:
             pickle.dump(
@@ -161,6 +172,7 @@ class Server:
                  [self.players[0].kills, self.players[1].kills]],
             file)
 
+    # Загрузка игровых параметрой и прогресса из файла
     def autoLoad(self):
         try:
             with open("autosave/game.dat", "rb") as file:

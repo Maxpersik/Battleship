@@ -43,7 +43,7 @@ class Game:
                 mapRefresh = True
                 count = 0
 
-            # Обновление
+            # Обновление карты
             if mapRefresh:
                 self.view.clear()
                 mapStr = self.client.sendServer("maps")
@@ -52,7 +52,6 @@ class Game:
 
             self.view.drawMessage(answer)
             self.view.drawMouse()
-            # Рендеринг
 
             # После отрисовки всего, переворачиваем экран
             pygame.display.flip()

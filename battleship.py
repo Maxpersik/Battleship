@@ -2,10 +2,12 @@ import threading, sys, config
 from classes.game import Game
 from classes.server import Server
 
+# Запуск сервера
 def startServer():
     server = Server()
     server.run()
 
+# Начало игры
 def startGame():
     if config.conn["server"]:
         threading.Thread(target=startServer).start()

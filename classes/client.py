@@ -5,6 +5,7 @@ class Client:
         self.__host = host
         self.__port = port
 
+    # Подключение клиента к серверу
     def sendServer(self, cmd):
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         conn.connect((self.__host, self.__port))

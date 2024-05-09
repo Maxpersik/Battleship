@@ -1,6 +1,7 @@
 import pygame, config
 
 class View:
+    # Основные параметры вызуализации
     WIDTH = 800
     HEIGHT = 500
     MAP1_X = 80
@@ -20,6 +21,7 @@ class View:
     # 2 - ранен
     # 3 - промах
 
+    # Настройки курсоров
     CURSOR_AIM_SIZE = (24, 24)
     CURSOR_AIM_HOTSPOT = (12, 12)
     CURSOR_AIM_ANDMASK = ( \
@@ -67,6 +69,7 @@ class View:
         pygame.display.set_caption("Battleship: StartGame")
         self.__font = pygame.font.Font("fonts/Arial.ttf", 15)
 
+    # Заполнение игрового поля изображениями
     def __drawCell(self, px, py, type):
         if type == 0:
             pygame.draw.rect(self.__sf, (0x00, 0xb4, 0xd8), (px, py, 25, 25))  # море
@@ -78,11 +81,13 @@ class View:
             self.__drawImage("splash", px, py)
         return
 
+    # Загрузка изображения в ячейку
     def __drawImage(self, name, x, y):
         surf = pygame.image.load("images/" + name + ".bmp")
         rect = surf.get_rect(topleft=(x, y))
         self.__sf.blit(surf, rect)
 
+    # Зарисовка игрового поля
     def drawMap(self, mx, my, map):
         text = self.__font.render("        A    B    C   D    E    F   G    H    I     J", 1, (0xff, 0xff, 0xff))
         place = text.get_rect(center=(mx + 108, my - 7))
@@ -111,6 +116,7 @@ class View:
         place = text.get_rect(center=(mx + 108, my + 260))
         self.__sf.blit(text, place)
 
+    # Вывод сообщения
     def drawMessage(self, code="CODE_START"):
         try:
             message = config.messages[code]
@@ -122,6 +128,7 @@ class View:
         rect = text.get_rect(center=(self.MSG_X + self.MSG_WIDTH // 2, self.MSG_Y + self.MSG_HEIGHT // 2))
         self.__sf.blit(text, rect)
 
+    # Зарисовка обоих игровых полей
     def drawGame(self, mapStr):
         if len(mapStr) < 200:
             return False
@@ -130,6 +137,7 @@ class View:
         self.drawMap(self.MAP2_X, self.MAP_Y, mapStr[-100:])
         return True
 
+    # Определение команды выстрела по координатам курсора
     def getMapCoord(self, mouse_x, mouse_y):
         L = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 
@@ -141,6 +149,7 @@ class View:
             return coord
         return False
 
+    # Измение курсора в соответсвии с координатами
     def drawMouse(self):
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
@@ -155,16 +164,19 @@ class View:
         pygame.mouse.set_cursor(self.CURSOR_NORMAL_SIZE, self.CURSOR_NORMAL_HOTSPOT, self.CURSOR_NORMAL_ANDMASK, self.CURSOR_NORMAL_XORMASK)
         return
 
+    # Проверка координат курсора мыши внутри игрового пространства
     def __isRangeMap(self, mouse_x, mouse_y):
         if mouse_x > self.MAP2_X and mouse_x < (self.MAP2_X + self.MAP_WIDTH) and mouse_y > self.MAP_Y and mouse_y < (self.MAP_Y + self.MAP_HEIGHT):
             return True
         return False
 
+    # Проверка координат курсора мыши снаружи игрового пространства
     def __isRangeMapInverse(self, mouse_x, mouse_y):
         if (mouse_x > self.MAP1_X and mouse_x < (self.MAP1_X + self.MAP_WIDTH) and mouse_y > self.MAP_Y and mouse_y < (self.MAP_Y + self.MAP_HEIGHT)) or (mouse_x > self.MSG_X and mouse_x < self.MSG_X + self.MSG_WIDTH and mouse_y > self.MSG_Y and mouse_y < self.MSG_Y + self.MSG_HEIGHT):
             return False
         return True
 
+    # Воспоризведение звука
     def playSound(self, code):
         try:
             pygame.mixer.Channel(1).play(pygame.mixer.Sound(config.sounds[code]))
@@ -172,5 +184,6 @@ class View:
             pass
         return
 
+    # Очищение экрана
     def clear(self):
         self.__sf.fill(self.BLACK)

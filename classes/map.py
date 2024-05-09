@@ -13,6 +13,7 @@ class Map:
 
         self.genShips()
 
+    # Генерация кораблей в случайных позициях
     def genShips(self):
         # Однопалубные корабли х 4
         while len(self.ships) < 4:
@@ -84,6 +85,7 @@ class Map:
             self.printShips()
         return
 
+    # Возможность визуализации в консоли
     def printShips(self):
         for y in range(1, self.N + 1):
             for x in range(1, self.N + 1):
@@ -93,14 +95,17 @@ class Map:
                     print("[ ]", end="")
             print()
 
+    # Запись невозможных координат для генерации кораблей и стрельбы компьютера
     def __denyExtend(self, x, y):
         self.deny.extend(((x, y), (x + 1, y), (x - 1, y), (x, y - 1), (x, y + 1), (x + 1, y + 1), (x + 1, y - 1), (x - 1, y + 1), (x - 1, y - 1)))
         return
 
+    # Ячейки для алгоритмизации расстановки кораблей
     def __randDirect(self, x, y, dir):
         randDirect = [(x + 1, y), (x, y + 1), (x - 1, y), (x, y - 1)]
         return randDirect[dir]
 
+    # Создание карты для игрока
     def maps(self):
         shipStr = ""
         for y in range(1, self.N + 1):
@@ -128,39 +133,47 @@ class Map:
 
         return shipStr
 
+    # Проверка координат на нахождение корабля
     def isShip(self, x, y):
         if (x, y) in self.ships:
             return True
         return False
 
+    # Запись вражеского выстрела
     def saveEnemyShoot(self, x, y):
         self.enemy_shoots.append((x, y))
 
+    # Проверка для предотвращения стрельбы в одну ячейку
     def isShoot(self, x, y):
         if (x, y) in self.shoots:
             return False
         return True
 
+    # Запись выстрела и проверка попадания в корабль
     def saveShoot(self, x, y, isGoal):
         self.shoots.append((x, y))
         if isGoal:
             self.enemy_ships.append((x, y))
         return
 
+    # Ограничение области карты
     def isMap(self, x, y):
         if x < self.N + 1 and x > 0 and y < self.N + 1 and y > 0:
             return True
         return False
 
+    # Форматирование координат из вида команды в численный
     def getXY(self, an):
         L = "ABCDEFGHIJ"
         x = int(L.index(an[0:1])) + 1
         y = int(an[1:2]) + 1
         return x, y
 
+    # Запись основных игровых параметров в массив для автосохранения
     def getData(self):
         return [self.ships, self.shoots, self.deny, self.enemy_ships, self.enemy_shoots]
 
+    # Установка основных параметров для автосохранения
     def setData(self, data):
         self.ships = data[0]
         self.shoots = data[1]

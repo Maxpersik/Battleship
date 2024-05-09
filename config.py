@@ -1,15 +1,18 @@
+# Сетевые параметры
 conn = dict(
     host="127.0.0.1",
     port=33333,
     server=True
 )
 
+# Игровые настройки
 game = dict(
     fps=30,
     bots=1,
     autosave=1
 )
 
+# Настройки текстов сообщений
 messages = dict(
     CODE_HIT="Вы попали, стреляйте снова!!!",
     CODE_SPLASH="Вы не попали, переход хода :(",
@@ -24,6 +27,7 @@ messages = dict(
     CODE_ERROR="Ошибка!"
 )
 
+# Настройка кодов сообщений
 codes = dict(
     CODE_START="CODE_START",
     CODE_SPLASH="CODE_SPLASH",
@@ -38,6 +42,7 @@ codes = dict(
     CODE_ERROR="CODE_ERROR"
 )
 
+# Настройка аудиофайлов
 sounds = dict(
     CODE_HIT="sounds/hit.wav",
     CODE_SPLASH="sounds/splash.wav",

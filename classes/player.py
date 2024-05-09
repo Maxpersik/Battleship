@@ -10,14 +10,17 @@ class Player:
         self.target_ships = []
         self.kills = 0
 
+    # Получение карты для игрока
     def getMaps(self):
         return self.map.maps()
 
+    # Получение координат выстрела для игрока или компьютера
     def getXY(self, cmd=False):
         if self.isBot:
             return self.getBotShoot()
         return self.map.getXY(cmd)
 
+    # Запись выстрела
     def makeShoot(self, x, y, enemyPlayer):
         if not self.map.isShoot(x, y):
             return 2
@@ -34,11 +37,13 @@ class Player:
 
         return 0
 
+    # Проверка попадания в цель
     def isGoal(self, x, y):
         if self.map.isShip(x, y):
             return True
         return False
 
+    # Настройка стрельбы компьютера
     def getBotShoot(self):
         while len(self.target_ships) > 0:
             xg, yg = self.target_ships[0]
@@ -50,6 +55,7 @@ class Player:
 
         return self.getRandomShoot()
 
+    # Рандомные координаты для выстрела компьютера
     def getRandomShoot(self):
         while True:
             x = random.randint(1, 10)
@@ -57,21 +63,25 @@ class Player:
             if self.isRange(x, y):
                 return x, y
 
+    # Ячейки для продолжения стрельбы компьютера
     def __randDirect(self, x, y, dir):
         randDirect = [(x + 1, y), (x, y + 1), (x - 1, y), (x, y - 1)]
         return randDirect[dir]
 
+    # Ячейки, исключающие попадания компьютера в координаты без цели
     def __setDeny(self, x, y):
         self.deny_shoots.append(((x + 1), (y + 1)))
         self.deny_shoots.append(((x + 1), (y - 1)))
         self.deny_shoots.append(((x - 1), (y + 1)))
         self.deny_shoots.append(((x - 1), (y - 1)))
 
+    # Проверка допустимых координат для стрельбы
     def isRange(self, x, y):
         if self.map.isShoot(x, y) and self.map.isMap(x, y) and (x, y) not in self.deny_shoots:
             return True
         return False
 
+    # Проверка победитя игры
     def isWinner(self):
         if self.kills >= 20:
             return True
