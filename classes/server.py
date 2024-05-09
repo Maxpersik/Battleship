@@ -1,4 +1,4 @@
-import socket, sys, config
+import socket, sys, config, pickle
 from classes.player import Player
 
 class Server:
@@ -27,6 +27,9 @@ class Server:
 
         print("Слушаю порт: ", self.PORT)
 
+        if config.game["autosave"] == 1:
+            self.autoLoad()
+
         running = True
         while running:
             server.listen(2)
@@ -48,6 +51,9 @@ class Server:
 
                 res = self.__applyCmd(cmd)
                 sock.send(str(res).encode())
+
+                if config.game["autosave"] == 1:
+                    self.autoSave()
 
         sock.close()
         sys.exit()
@@ -146,3 +152,27 @@ class Server:
         codes = ["CODE_SPLASH", "CODE_HIT", "CODE_REPEAT", "CODE_ENEMY_SPLASH", "CODE_ENEMY_HIT", "CODE_ENEMY_REPEAT"]
         index = goal + 3 if isEnemyPlayer else goal
         return codes[index]
+
+    def autoSave(self):
+        with open("autosave/game.dat", "wb") as file:
+            pickle.dump(
+                [self.players[0].map.getData(), self.players[1].map.getData(),
+                 [self.gameOver, self.winStatus, self.runPlayer],
+                 [self.players[0].kills, self.players[1].kills]],
+            file)
+
+    def autoLoad(self):
+        try:
+            with open("autosave/game.dat", "rb") as file:
+                unpickled = pickle.load(file)
+                if unpickled[2][0] == True: # Game over
+                    return
+                self.players[0].map.setData(unpickled[0])
+                self.players[1].map.setData(unpickled[1])
+                self.gameOver = unpickled[2][0]
+                self.winStatus = unpickled[2][1]
+                self.runPlayer = unpickled[2][2]
+                self.players[0].kills = unpickled[3][0]
+                self.players[1].kills = unpickled[3][1]
+        except:
+            print("No data file")

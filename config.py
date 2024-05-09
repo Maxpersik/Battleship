@@ -6,7 +6,8 @@ conn = dict(
 
 game = dict(
     fps=30,
-    bots=1
+    bots=1,
+    autosave=1
 )
 
 messages = dict(

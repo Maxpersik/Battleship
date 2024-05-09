@@ -157,3 +157,13 @@ class Map:
         x = int(L.index(an[0:1])) + 1
         y = int(an[1:2]) + 1
         return x, y
+
+    def getData(self):
+        return [self.ships, self.shoots, self.deny, self.enemy_ships, self.enemy_shoots]
+
+    def setData(self, data):
+        self.ships = data[0]
+        self.shoots = data[1]
+        self.deny = data[2]
+        self.enemy_ships = data[3]
+        self.enemy_shoots = data[4]
